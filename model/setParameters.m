@@ -39,7 +39,7 @@ end
 % allows for randomized stim input for reverse correlation analysis
 if isfield(opt,'stimMode')
     switch opt.stimMode
-        case {'standard','random'}
+        case {'standard','random','surr_supp'}
             % ok
         otherwise
             error('stimMode must be "standard" or "random".')
@@ -90,7 +90,7 @@ p.gamNSc          = NaN;
 p.sigmaA          = 20;
 
 h0                = makePrefilter(0:p.dt/1000:0.8, p.gamPSh, p.gamPSc, p.gamNSh, p.gamNSc, p.aANeg);
-p.h               = repmat(h0, p.ntheta, 1);
+p.h               = repmat(h0, p.ntheta.*p.nx, 1);
 
 %% Temporal normalization
 p.tauE1 = 0; % time constant of temporal summation for S1 excitation
@@ -137,6 +137,6 @@ if ~isempty(opt)
     end
     
     h0            = makePrefilter(0:p.dt/1000:0.8, p.gamPSh, p.gamPSc, p.gamNSh, p.gamNSc, p.aANeg);
-    p.h           = repmat(h0, p.ntheta, 1);
+    p.h           = repmat(h0, p.ntheta.*p.nx, 1);
 end
 

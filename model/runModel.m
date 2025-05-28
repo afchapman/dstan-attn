@@ -102,6 +102,10 @@ for iO = 1:p.norient
     p.rfresp(iO,:) = rfResponse(orientations(iO), p.ntheta);
 end
 
+if strcmp(p.stimMode,'surr_supp')
+    p.rfresp = [p.rfresp 0.*p.rfresp; 0.*p.rfresp p.rfresp];
+end
+
 %% loop through all conditions to run
 ev = zeros(2,nsoa,ncond,ncontrast);
 for icond = 1:numel(rcond)

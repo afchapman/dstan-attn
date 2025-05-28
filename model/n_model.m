@@ -14,9 +14,9 @@ for t = p.dt:p.dt:p.T
     
     % Excitatory drive
     if any(inp)
-        drive1(:,idx) = halfExp(p.rfresp(logical(inp),:)*contrast(logical(inp)),p.p)'; % select pre-calculated response
+        drive1(:,idx) = halfExp(p.rfresp(logical(inp),:)'*contrast(logical(inp)),p.p); % select pre-calculated response
     else
-        drive1(:,idx) = zeros(p.ntheta,1);
+        drive1(:,idx) = zeros(p.ntheta.*p.nx,1);
     end
     
     attGain = halfExp(1+p.rav(:,idx-1)*p.aAV).*halfExp(1+p.rai(:,idx-1)*p.aAI);
@@ -61,7 +61,7 @@ for t = p.dt:p.dt:p.T
             case {3, 4}
                 rfresp(:,:,iStim) = p.rfresp(3:4,:);
         end
-        evidence(iStim) = decodeEvidence(response(:,idx)', rfresp(:,:,iStim));
+        evidence(iStim) = decodeEvidence(response(1:p.ntheta,idx)', rfresp(:,1:p.ntheta,iStim));
         evidence(iStim) = evidence(iStim)*p.decisionWindows(iStim,idx); % only accumulate if in the decision window
         % evidence(:,abs(evidence)<1e-3) = 0; % otherwise near-zero response will give a little evidence
 
