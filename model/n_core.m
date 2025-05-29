@@ -1,4 +1,4 @@
-function [r, f, s] = n_core(d, sigma, p, r_prev, tau, temporalW, dt)
+function [r, f, s] = n_core(d, sigma, p, r_prev, tau, temporalW, s_tuning, dt)
 
 % function [r, f, s] = n_core(d, sigma, p, r_prev, tau, dt)
 %
@@ -15,7 +15,8 @@ function [r, f, s] = n_core(d, sigma, p, r_prev, tau, temporalW, dt)
 pool = abs(d); % abs in case drive is negative
 
 % Suppressive Drive
-s = sum(sum(pool.*temporalW,2));
+% s = sum((s_tuning*pool).*temporalW,2);
+s = sum(s_tuning * (pool.*temporalW),2);
 
 % Normalization
 f = d(:,end) ./ (s + halfExp(sigma, p));

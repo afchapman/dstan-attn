@@ -49,6 +49,37 @@ else
     p.stimMode = 'standard';
 end
 
+%% Stim set
+% vary stimulus orientation properties for different analyses
+if isfield(opt,'stimSet')
+    switch opt.stimSet
+        case {'standard','10deg'}
+            % ok
+        otherwise
+            error('stimSet not known.')
+    end
+    p.stimSet = opt.stimSet;
+else
+    p.stimSet = 'standard';
+end
+
+%% Decoder
+% how is the decision layer decoding the stimulus identity?
+if isfield(opt,'decoderType')
+    switch opt.decoderType
+        case 'tilt'
+            p.ndecode = 2;
+        case 'continuous'
+            p.ndecode = 18;
+        otherwise
+            error('decoderType not known.')
+    end
+    p.decoderType = opt.decoderType;
+else
+    p.decoderType = 'tilt';
+    p.ndecode = 2;
+end
+
 %% Time
 p.dt              = 2;              % time-step (ms)
 p.T               = 2.1*1000;       % duration (ms)
@@ -99,6 +130,9 @@ p.tauE2 = 0; % " " S2 excitation
 p.tauS2 = 0; % " " S2 suppression
 p.tauEAV = 0; % " " AV excitation
 p.tauSAV = 0; % " " AV suppression
+
+%% Suppressive pooling
+p.m_supp = 0; % exponent for tuning of suppressive pools
 
 %% Stimulus
 p.stimOnset       = 500;            % relative to start of trial (ms)

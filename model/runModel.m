@@ -67,15 +67,19 @@ end
 %% Set conditions to simulate
 condnames       =  {'cueT1','cueT2','cueN'};
 
-% Stimuli
-tilt = 2*pi/180;
-orientations = [pi/2+tilt pi/2-tilt tilt pi-tilt]; % V-CCW V-CW H-CCW H-CW
+% Stimuli & Conditions
+switch p.stimSet
+    case 'standard'
+        tilt = 2*pi/180;
+        orientations = [pi/2+tilt pi/2-tilt tilt pi-tilt]; % V-CCW V-CW H-CCW H-CW
+        stimseqs  = {[2 1],[2 2],[2 3],[2 4]};
+    case '10deg'
+        orientations = (0:10:170).*pi/180;
+        % stimseqs = {[1 1],[1 2],[1 3],[1 4],[1 5],[1 6],[1 7],[1 8],[1 9],[1 10]};
+        stimseqs = {[1 1],[2 1],[3 1],[4 1],[5 1],[6 1],[7 1],[8 1],[9 1],[10 1]};
+end
 p.norient = numel(orientations);
-
-% Conditions
 contrasts = p.stimContrasts;
-% soas      = [100:50:500 800];
-stimseqs  = {[2 1],[2 2],[2 3],[2 4]};
 
 % Pick conditions to run
 rcontrast = 1:size(contrasts,2); % contrast levels to run
@@ -101,6 +105,10 @@ nseq = numel(rseq);
 for iO = 1:p.norient
     p.rfresp(iO,:) = rfResponse(orientations(iO), p.ntheta);
 end
+
+% suppressive pooling
+p.s_tuning = rfResponse(-(1:p.ntheta).*pi/p.ntheta, p.ntheta, 1./p.p_supp);
+% p.s_tuning = p.s_tuning./mean(p.s_tuning,2);
 
 %% loop through all conditions to run
 ev = zeros(2,nsoa,ncond,ncontrast);

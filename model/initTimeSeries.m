@@ -19,10 +19,10 @@ p.f3   = zeros(p.ntheta,p.nt);
 p.r3   = zeros(p.ntheta,p.nt);
 
 % Decision
-p.dd   = zeros(p.nstim,p.nt);
-p.sd   = zeros(p.nstim,p.nt);  
-p.fd   = zeros(p.nstim,p.nt); 
-p.rd   = zeros(p.nstim,p.nt);
+p.dd   = zeros(p.ndecode,p.nt);
+p.sd   = zeros(p.ndecode,p.nt);  
+p.fd   = zeros(p.ndecode,p.nt); 
+p.rd   = zeros(p.ndecode,p.nt);
     
 % Voluntary attention
 p.dav  = zeros(p.ntheta,p.nt); 
