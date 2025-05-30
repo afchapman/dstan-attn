@@ -10,13 +10,13 @@ rcond = 3; % cueT1, cueT2
 
 opt.aAI = 0;
 opt.aAV = 0;
-opt.sigma1 = 0.1;
+opt.sigma1 = 0.02;
 
 opt.display.plotTS = 0; % plot the time series for each simulation
 opt.display.plotPerf = 0;
 
-opt.tauE1 = 500;
-opt.tauS1 = 500;
+opt.tauE1 = 400;
+opt.tauS1 = 100;
 
 opt.dt = 2;
 opt.T = 2.1*1000;
@@ -30,7 +30,7 @@ opt.nx = 2;
 
 opt.stimMode = 'surr_supp';
 
-contrC = [0 exp(linspace(log(0.1),log(1),19))];
+contrC = [0 logspace(log10(0.05),log10(1),9)];
 contrS = [0 .12 .25 .5 1];
 
 paramList = combvec(contrC,contrS);
@@ -51,7 +51,8 @@ end
 contrResp = reshape(sum(all_r1(6,:,:),2),length(contrC),length(contrS));
 
 figure
-plot(contrC,contrResp)
+semilogx(contrC,contrResp)
+xticks([.05 .1:.1:1])
 xlabel('Center contrast')
 ylabel('Response')
 legend({'Surround: 0%','Surround 12%','Surround 25%','Surround 50%','Surround 100%'},'Location','NorthWest')
