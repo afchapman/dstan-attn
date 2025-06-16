@@ -132,7 +132,7 @@ p.tauEAV = 0; % " " AV excitation
 p.tauSAV = 0; % " " AV suppression
 
 %% Suppressive pooling
-p.m_supp = 0; % exponent for tuning of suppressive pools
+p.p_supp = Inf; % exponent for tuning of suppressive pools
 
 %% Stimulus
 p.stimOnset       = 500;            % relative to start of trial (ms)

@@ -113,6 +113,7 @@ p.s_tuning = rfResponse(-(1:p.ntheta).*pi/p.ntheta, p.ntheta, 1./p.p_supp);
 % create distinct spatial populations for surround suppression
 if strcmp(p.stimMode,'surr_supp')
     p.rfresp = [p.rfresp 0.*p.rfresp; 0.*p.rfresp p.rfresp];
+    p.s_tuning = ones(2.*p.ntheta,2.*p.ntheta); % force uniform tuning, for now
 end
 
 %% loop through all conditions to run
