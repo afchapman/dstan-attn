@@ -1,7 +1,14 @@
+% this codes generates model output used for contrast-dependent suppression
+% analyses and was run on the BU SCC
+
+% data output is available on our OSF repository: https://osf.io/qy9pa/
+
+ncores = str2num(getenv("NSLOTS"));
+pool = parpool(ncores);
 
 addpath('model');
 
-% default model settings
+%% model setup
 opt = [];
 modelClass = [];
 rsoa = 2001; % SOA = 250 ms (see runModel)
@@ -30,29 +37,18 @@ opt.nx = 2;
 
 opt.stimMode = 'surr_supp';
 
-contrC = [0 logspace(log10(0.05),log10(1),9)];
-contrS = [0 .12 .25 .5 1];
+%% generate model output for each parameter combination
+contrC = [0 logspace(log10(0.05),log10(1),9)]; % center
+contrS = [0 .12 .25 .5 1]; % surround
 
 paramList = combvec(contrC,contrS);
 
-all_d1 = nan(24,opt.nt,length(paramList));
-all_s1 = nan(24,opt.nt,length(paramList));
-all_f1 = nan(24,opt.nt,length(paramList));
-all_r1 = nan(24,opt.nt,length(paramList));
-for ii=1:length(paramList)
-    opt.stimContrasts = paramList(:,ii);
-    [~,p,~] = runModel(opt, modelClass, rsoa, rseq, rcond);
-    all_d1(:,:,ii) = p.d1;
-    all_s1(:,:,ii) = p.s1;
-    all_f1(:,:,ii) = p.f1;
-    all_r1(:,:,ii) = p.r1;
+r1_surr = nan(length(paramList),24,opt.nt);
+parfor ii=1:length(paramList)
+    opt2 = opt;
+    opt2.stimContrasts = paramList(:,ii);
+    [~,p,~] = runModel(opt2, modelClass, rsoa, rseq, rcond);
+    r1_surr(ii,:,:) = p.r1;
 end
 
-contrResp = reshape(sum(all_r1(6,:,:),2),length(contrC),length(contrS));
-
-figure
-semilogx(contrC,contrResp)
-xticks([.05 .1:.1:1])
-xlabel('Center contrast')
-ylabel('Response')
-legend({'Surround: 0%','Surround 12%','Surround 25%','Surround 50%','Surround 100%'},'Location','NorthWest')
+save('output/surroundSupp.mat','r1_surr');
