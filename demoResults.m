@@ -242,7 +242,7 @@ load('output/respAdapt_iden.mat');
 r1_iden = reshape(r1_iden(:,6,:),10,10,16,3501);
 
 % we have 10 taus [0,50,100:100:800] and 15 SOAs (+1 for T1 absent)
-% see Eqn 11
+% see Eqn 10
 ra_iden = 1 - sum(r1_iden(:,:,2:end,:)-r1_iden(:,:,1,:),4)./sum(r1_iden(:,:,1,:),4);
 
 figure
@@ -263,7 +263,66 @@ ylim([-.1 1])
 legend({"E = 100, S = 50","E = 100, S = 500","E = 500, S = 50","E = 500, S = 500"})
 
 %% response adaptation in non-identical stimuli
-%  similar to before, but now we run a sequence with different orientations
+%  testing response adaptation while varying the similarity between stimuli
+
+opt.stimDur = 300;
+
+opt.tauE1 = 100;
+opt.tauS1 = 50;
+
+opt.dt = 2;
+opt.T = 4.1*1000;
+opt.nt = opt.T/opt.dt+1;
+opt.tlist = 0:opt.dt:opt.T;
+
+soas = 400;
+
+opt.stimSet = '10deg';
+opt.decoderType = 'continuous';
+
+seqList = 1:10; % 1 = 0° (identical), 2-10 increasing in 10° steps
+suppList = [Inf .04 .1 .2 .4 1 0]; % p, see Eqn 11
+paramList = combvec(1:length(suppList),1:length(seqList));
+
+r1_noniden = nan(opt.nt,length(paramList),2);
+r1_noniden_base = nan(opt.nt,length(suppList));
+for ii=1:length(paramList)
+    this_opt = opt;
+    this_opt.m_supp = suppList(paramList(1,ii));
+    iseq = seqList(paramList(2,ii));
+
+    % get the adapted response when both stimuli are shown
+    this_opt.stimContrasts = [.64; .64];
+    [~,p,~] = runModel(this_opt,modelClass,soas,iseq,rcond);
+    r1_noniden(:,1,ii) = p.r1(12,:);
+
+    % get the response to T1 alone
+    this_opt.stimContrasts = [.64; 0];
+    [~,p,~] = runModel(this_opt,modelClass,soas,iseq,rcond);
+    r1_noniden(:,2,ii) = p.r1(12,:);
+
+    % get the response to T2 alone (once per p)
+    if paramList(2,ii)==1
+        this_opt.stimContrasts = [0; .64];
+        [~,p,~] = runModel(this_opt,modelClass,soas,iseq,rcond);
+        r1_noniden_base(:,paramList(1,ii)) = p.r1(12,:);
+    end
+end
+
+r1_noniden = reshape(r1_noniden,opt.nt,length(seqList),length(suppList),2);
+
+adapt_r1 = squeeze(r1_noniden(12,:,:,:,1)-r1_noniden(12,:,:,:,2));
+
+adapt_ind = 1-squeeze(sum(adapt_r1,1) ./ sum(r1_noniden_base(12,:,:),2));
+
+ra_noniden = 1-sum(r1_noniden(:,:,:,1)-r1_noniden(:,:,:,2),1)./sum(r1_noniden_base;
+
+figure
+plot(0:10:90,adapt_ind)
+ylim([-.1 1])
+xlabel('Distance between stimuli (°)')
+ylabel('Adaptation index')
+
 
 r1_orth = nan(2,opt.nt,2,2); % need responses from 2 neurons
 for ii=1:length(soas)
@@ -360,7 +419,7 @@ load('output/backwardMask.mat');
 r1_mask = reshape(r1_mask(:,[6 12],:),10,10,16,2,3501);
 
 % we have 10 taus [0,50,100:100:800] and 15 SOAs (+1 for T1 absent)
-% see Eqn 12
+% see Eqn 13
 ra_mask = 1 - sum(r1_mask(:,:,2:end,1,:),5)./sum(r1_mask(:,:,1,2,:),5);
 
 figure

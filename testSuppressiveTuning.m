@@ -48,11 +48,11 @@ for ii=1:length(paramList)
 
     this_opt.stimContrasts = [.64; .64];
     [~,p,~] = runModel(this_opt,modelClass,soas,iseq,rcond);
-    all_r1(:,:,ii,1) = p.r1;
+    all_r1(:,:,ii,1) = p.r1(12,:);
 
     this_opt.stimContrasts = [.64; 0];
     [~,p,~] = runModel(this_opt,modelClass,soas,iseq,rcond);
-    all_r1(:,:,ii,2) = p.r1;
+    all_r1(:,:,ii,2) = p.r1(12,:);
 
     if paramList(1,ii)==1
         this_opt.stimContrasts = [0; .64];
