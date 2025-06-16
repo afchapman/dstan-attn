@@ -65,6 +65,21 @@ plot(-3000:5:0,squeeze(rc_fit(5,2:end,:)))
 xlim([-1200 0])
 title('tauS = 400 ms')
 
+%% surround suppression
+load('output/surroundSupp.mat');
+
+contrC = [0 logspace(log10(0.05),log10(1),9)]; % center
+contrS = [0 .12 .25 .5 1]; % surround
+
+contrResp = reshape(sum(r1_supp(:,6,:),3),length(contrC),length(contrS));
+
+figure
+semilogx(contrC,contrResp)
+xticks([.05 .1:.1:1])
+xlabel('Center contrast')
+ylabel('Response')
+legend({'Surround: 0%','Surround 12%','Surround 25%','Surround 50%','Surround 100%'},'Location','NorthWest')
+
 %% transient / sustained dynamics
 
 opt.stimContrasts = [.64; 0];

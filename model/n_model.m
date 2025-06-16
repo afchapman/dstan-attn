@@ -14,9 +14,9 @@ for t = p.dt:p.dt:p.T
     
     % Excitatory drive
     if any(inp)
-        drive1(:,idx) = halfExp(p.rfresp(logical(inp),:)*contrast(logical(inp)),p.p)'; % select pre-calculated response
+        drive1(:,idx) = halfExp(p.rfresp(logical(inp),:)'*contrast(logical(inp)),p.p); % select pre-calculated response
     else
-        drive1(:,idx) = zeros(p.ntheta,1);
+        drive1(:,idx) = zeros(p.ntheta.*p.nx,1);
     end
     
     attGain = halfExp(1+p.rav(:,idx-1)*p.aAV).*halfExp(1+p.rai(:,idx-1)*p.aAI);
