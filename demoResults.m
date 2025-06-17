@@ -71,7 +71,7 @@ load('output/surroundSupp.mat');
 contrC = [0 logspace(log10(0.05),log10(1),9)]; % center
 contrS = [0 .12 .25 .5 1]; % surround
 
-contrResp = reshape(sum(r1_supp(:,6,:),3),length(contrC),length(contrS));
+contrResp = reshape(sum(r1_surr(:,6,:),3),length(contrC),length(contrS));
 
 figure
 semilogx(contrC,contrResp)
@@ -290,108 +290,43 @@ opt.T = 4.1*1000;
 opt.nt = opt.T/opt.dt+1;
 opt.tlist = 0:opt.dt:opt.T;
 
-soas = 400;
-
 opt.stimSet = '10deg';
 opt.decoderType = 'continuous';
 
+r1_orth = nan(2,opt.nt,2); % need responses from 2 neurons
+
+% present both stimuli
+opt.stimContrasts = [.64; .64];
+[~,p,~] = runModel(opt,modelClass,400,10,rcond);
+r1_orth(:,:,1) = p.r1([6 12],:);
+
+% present only one stimulus
+opt.stimContrasts = [0; .64];
+[~,p,~] = runModel(opt,modelClass,400,10,rcond);
+r1_orth(:,:,2) = p.r1([6 12],:);
+
+% response adaptation in T2 with orthogonal stimuli
+figure
+plot(opt.tlist,r1_orth(:,:,1),...
+     opt.tlist,r1_orth(:,:,2))
+xlim([0 2500])
+legend({'T1, T1 present','T2, T1 present','T1, T1 absent','T2, T1 absent'})
+
+
+% effect of stimulus similarity and suppressive tuning on adaptation
+load('output/respAdapt_noniden.mat');
+
 seqList = 1:10; % 1 = 0° (identical), 2-10 increasing in 10° steps
 suppList = [Inf .04 .1 .2 .4 1 0]; % p, see Eqn 11
-paramList = combvec(1:length(suppList),1:length(seqList));
+r1_noniden = reshape(r1_noniden(:,12,:),length(suppList),length(seqList),3,[]);
 
-r1_noniden = nan(opt.nt,length(paramList),2);
-r1_noniden_base = nan(opt.nt,length(suppList));
-for ii=1:length(paramList)
-    this_opt = opt;
-    this_opt.m_supp = suppList(paramList(1,ii));
-    iseq = seqList(paramList(2,ii));
-
-    % get the adapted response when both stimuli are shown
-    this_opt.stimContrasts = [.64; .64];
-    [~,p,~] = runModel(this_opt,modelClass,soas,iseq,rcond);
-    r1_noniden(:,1,ii) = p.r1(12,:);
-
-    % get the response to T1 alone
-    this_opt.stimContrasts = [.64; 0];
-    [~,p,~] = runModel(this_opt,modelClass,soas,iseq,rcond);
-    r1_noniden(:,2,ii) = p.r1(12,:);
-
-    % get the response to T2 alone (once per p)
-    if paramList(2,ii)==1
-        this_opt.stimContrasts = [0; .64];
-        [~,p,~] = runModel(this_opt,modelClass,soas,iseq,rcond);
-        r1_noniden_base(:,paramList(1,ii)) = p.r1(12,:);
-    end
-end
-
-r1_noniden = reshape(r1_noniden,opt.nt,length(seqList),length(suppList),2);
-
-adapt_r1 = squeeze(r1_noniden(12,:,:,:,1)-r1_noniden(12,:,:,:,2));
-
-adapt_ind = 1-squeeze(sum(adapt_r1,1) ./ sum(r1_noniden_base(12,:,:),2));
-
-ra_noniden = 1-sum(r1_noniden(:,:,:,1)-r1_noniden(:,:,:,2),1)./sum(r1_noniden_base;
+ra_noniden = 1-sum(r1_noniden(:,:,1,:)-r1_noniden(:,:,2,:),4)./sum(r1_noniden(:,:,3,:),4); % Eqn 12
 
 figure
-plot(0:10:90,adapt_ind)
+plot(0:10:90,ra_noniden)
 ylim([-.1 1])
 xlabel('Distance between stimuli (°)')
 ylabel('Adaptation index')
-
-
-r1_orth = nan(2,opt.nt,2,2); % need responses from 2 neurons
-for ii=1:length(soas)
-    % present both stimuli
-    opt.stimContrasts = [.64; .64];
-
-    % rseq=3 presents orthogonal stimuli
-    [~,p,~] = runModel(opt,modelClass,soas(ii),3,rcond);
-    r1_orth(:,:,1,ii) = p.r1([6 12],:);
-
-    % present only one stimulus
-    opt.stimContrasts = [0; .64];
-    [~,p,~] = runModel(opt,modelClass,soas(ii),3,rcond);
-    r1_orth(:,:,2,ii) = p.r1([6 12],:);
-end
-
-% response adaptation in T2 at short SOAs
-figure
-plot(opt.tlist,r1_orth(:,:,1,1),...
-     opt.tlist,r1_orth(:,:,2,1))
-xlim([0 2500])
-legend({'T1, T1 present','T2, T1 present','T1, T1 absent','T2, T1 absent'})
-
-% but not long SOAs
-figure
-plot(opt.tlist,r1_orth(:,:,1,2),...
-     opt.tlist,r1_orth(:,:,2,2))
-xlim([0 2500])
-legend({'T1, T1 present','T2, T1 present','T1, T1 absent','T2, T1 absent'})
-
-% effect of taus on response adaptation
-load('output/respAdapt_orth.mat');
-r1_orth = reshape(r1_orth(:,[6 12],:),10,10,16,2,3501);
-
-% we have 10 taus [0,50,100:100:800] and 15 SOAs (+1 for T1 absent)
-% see Eqn 12
-ra_orth = 1 - sum(r1_orth(:,:,2:end,2,:),5)./sum(r1_orth(:,:,1,1,:),5);
-
-figure
-subplot(121)
-plot(100:100:1500,squeeze(ra_orth(:,1,:)))
-ylim([-.1 1])
-title('tauE')
-
-subplot(122)
-plot(100:100:1500,squeeze(ra_orth(1,:,:)))
-ylim([-.1 1])
-title('tauS')
-
-% plot different parameter combinations
-figure
-plot(100:100:1500,reshape(ra_orth([3 6],[2 6],:),4,15))
-ylim([-.1 1])
-legend({"E = 100, S = 50","E = 100, S = 500","E = 500, S = 50","E = 500, S = 500"})
 
 %% backward masking
 
