@@ -18,7 +18,9 @@ Output data for the more computationally intensive analyses are available for do
 - demoResults.m: produces example analyses for each result, consistent with several figures shown in the manuscript
 - testRandomSeq.m: performs reverse correlation analyses with random stimulus sequences (computationally intensive)
 - fitRandFunctions.m: summarizes reverse correlation analyses and fits difference of Gammas to sensory responses (computationally intensive)
+- testSurroundSuppression.m: performs surround suppression simulation varying contrast of center and surround stimuli
 - testSubadditivity.m: analyses subadditive responses (computationally intensive)
-- testResponseAdaptation_[iden/orth].m: analyses response adaptation for identical/orthogonal stimulus sequences (computationally intensive)
+- testResponseAdaptation_iden.m: analyses response adaptation for identical stimulus sequences (computationally intensive)
+- testResponseAdaptation_noniden.m: analysis response adaptation for non-identical stimulus sequences (varying similiarity and suppressive tuning)
 - testBackwardMasking.m: analyses backward masking (computationally intensive)
 - testContrastDependentSuppression.m: analyses interactions between T1 and T2 contrast (computationally intensive)
