@@ -8,9 +8,7 @@ if nargin < 3
     m = 2*nRF-1;
 end
 
-for iRF = 1:nRF
-    response(iRF,:) = abs(cos(theta + iRF*pi/nRF).^m);
-end
+response = abs(cos((1:nRF)'*pi/nRF - theta).^m);
 
 
 %% show tuning curves
