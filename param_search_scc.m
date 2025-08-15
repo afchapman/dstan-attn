@@ -61,7 +61,7 @@ perf = nan(2,length(model_params));
 % set up parfor loop tracker
 q = parallel.pool.DataQueue;
 afterEach(q,@parforTracker);
-parforTracker(length(model_params));
+parforTracker(length(model_params),[],1000);
 
 parfor ii=1:length(model_params)
     opt2 = opt;

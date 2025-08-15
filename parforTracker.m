@@ -1,9 +1,13 @@
-function parforTracker(iterations,loops)
+function parforTracker(iterations,loops,postN)
 
 persistent count N k
 
 if nargin<2
     loops = [];
+end
+
+if nargin<3
+    postN = 1;
 end
 
 if ~isempty(iterations)
@@ -18,9 +22,11 @@ if ~isempty(iterations)
 else
     % update count
     count = count+1;
-    if isempty(k)
-        fprintf('Completed iteration: %d/%d\n',count,N);
-    else
-        fprintf('Job %02d, iteration: %d/%d\n',k,count,N);
+    if mod(count,postN)==0
+        if isempty(k)
+            fprintf('Completed iteration: %d/%d\n',count,N);
+        else
+            fprintf('Job %02d, iteration: %d/%d\n',k,count,N);
+        end
     end
 end
