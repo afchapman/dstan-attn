@@ -61,7 +61,7 @@ perf = nan(2,length(model_params));
 % set up parfor loop tracker
 q = parallel.pool.DataQueue;
 afterEach(q,@parforTracker);
-parforTracker(length(model_params),[],1000);
+parforTracker(length(model_params));
 
 parfor ii=1:length(model_params)
     opt2 = opt;
@@ -71,7 +71,7 @@ parfor ii=1:length(model_params)
     [~,p,~] = runModel(opt2,modelClass,model_params(5,ii),rseq,rcond);
     perf(:,ii) = p.ev;
 
-    send(q,[]);
+    send(q,[],1000);
 end
 
 model_out = reshape(perf,2,length(weights),length(weights),length(taus),length(taus),length(soas));
