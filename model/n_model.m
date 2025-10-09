@@ -4,6 +4,9 @@ function p = n_model(p)
 % This function is called by runModel.m
 
 idx = 1; % corresponds to t=0
+drive1 = zeros(size(p.d1));
+drive2 = zeros(size(p.d2));
+driveV = zeros(size(p.dav));
 for t = p.dt:p.dt:p.T
     idx = idx+1;
     
@@ -20,7 +23,7 @@ for t = p.dt:p.dt:p.T
     end
     
     attGain = halfExp(1+p.rav(:,idx-1)*p.aAV).*halfExp(1+p.rai(:,idx-1)*p.aAI);
-    p.d1(:,idx) = attGain.*sum(drive1.*p.tempWE1(idx:-1:1),2);
+    p.d1(:,idx) = attGain.*sum(drive1(:,1:idx).*p.tempWE1(idx:-1:1),2);
     
     % Normalize and update firing rates
     [p.r1(:,idx), p.f1(:,idx), p.s1(:,idx)] = n_core(...
@@ -28,8 +31,8 @@ for t = p.dt:p.dt:p.T
     
     %% Sensory layer 2 (S2)
     % Excitatory drive
-    drive2 = halfExp(p.r1(:,1:idx),p.p);
-    p.d2(:,idx) = sum(drive2.*p.tempWE2(idx:-1:1),2);
+    drive2(:,idx) = halfExp(p.r1(:,idx),p.p);
+    p.d2(:,idx) = sum(drive2(:,1:idx).*p.tempWE2(idx:-1:1),2);
     
     % Normalize and update firing rates
     [p.r2(:,idx), p.f2(:,idx), p.s2(:,idx)] = n_core(...
