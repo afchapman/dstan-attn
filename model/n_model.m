@@ -61,11 +61,12 @@ for t = p.dt:p.dt:p.T
         case 'tilt'
             % decode just between CCW/CW for the appropriate axis
             for iStim = 1:2
+                temp_rf = reshape(p.rfresp,p.norient,p.nspat,[]);
                 switch p.stimseq(iStim)
                     case {1, 2}
-                        rfresp(:,:,iStim) = p.rfresp(1:2,:);
+                        rfresp(:,:,iStim) = temp_rf(1:2,p.stimx(iStim),:);
                     case {3, 4}
-                        rfresp(:,:,iStim) = p.rfresp(3:4,:);
+                        rfresp(:,:,iStim) = temp_rf(3:4,p.stimx(iStim),:);
                 end
                 evidence(iStim) = decodeEvidence(response(:,idx)', rfresp(:,:,iStim));
                 evidence(iStim) = evidence(iStim)*p.decisionWindows(iStim,idx); % only accumulate if in the decision window
