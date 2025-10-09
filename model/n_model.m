@@ -45,7 +45,7 @@ for t = p.dt:p.dt:p.T
     
     % Normalize and update firing rates
     [p.r3(:,idx), p.f3(:,idx), p.s3(:,idx)] = n_core(...
-        p.d3(:,1:idx), p.sigma3, p.p, p.r3(:,idx-1), p.tau3, 1, ones(p.ntheta,p.ntheta), p.dt);
+        p.d3(:,1:idx), p.sigma3, p.p, p.r3(:,idx-1), p.tau3, 1, [], p.dt);
     
     %% Decision layer
     % Excitatory drive
@@ -86,19 +86,19 @@ for t = p.dt:p.dt:p.T
 
     % Normalize and update firing rates
     [p.rd(:,idx), p.fd(:,idx), p.sd(:,idx)] = n_core(...
-        p.dd(:,idx), p.sigmaD, p.p, p.rd(:,idx-1), p.tauD, 1, ones(2,2), p.dt);
+        p.dd(:,idx), p.sigmaD, p.p, p.rd(:,idx-1), p.tauD, 1, [], p.dt);
     
     %% Voluntary attention layer
     % Inputs
     inp = p.task(:,1:idx-1);
     
     % Excitatory drive
-    drive = halfExp(inp, p.p);
-    p.dav(:,idx) = sum(sum(drive.*p.tempWEAV(idx-1:-1:1),2)); % not feature-specific
-    
+    driveV(:,idx) = halfExp(inp(:,end), p.p);
+    p.dav(:,idx) = sum(sum(driveV(:,1:idx-1).*p.tempWEAV(idx-1:-1:1),2)); % not feature-specific
+
     % Normalize and update firing rates
     [p.rav(:,idx), p.fav(:,idx), p.sav(:,idx)] = n_core(...
-        p.dav(:,1:idx), p.sigmaA, p.p, p.rav(:,idx-1), p.tauAV, p.tempWSAV(idx:-1:1), ones(p.ntheta,p.ntheta), p.dt);
+        p.dav(:,1:idx), p.sigmaA, p.p, p.rav(:,idx-1), p.tauAV, p.tempWSAV(idx:-1:1), [], p.dt);
     
     %% Involuntary attention layer
     % Excitatory drive
@@ -107,6 +107,6 @@ for t = p.dt:p.dt:p.T
     
     % Normalize and update firing rates
     [p.rai(:,idx), p.fai(:,idx), p.sai(:,idx)] = n_core(...
-        p.dai(:,idx), p.sigmaA, p.p, p.rai(:,idx-1), p.tauAI, 1, ones(p.ntheta,p.ntheta), p.dt);
+        p.dai(:,idx), p.sigmaA, p.p, p.rai(:,idx-1), p.tauAI, 1, [], p.dt);
     
 end

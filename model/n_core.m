@@ -16,7 +16,11 @@ pool = abs(d); % abs in case drive is negative
 
 % Suppressive Drive
 % s = sum((s_tuning*pool).*temporalW,2);
-s = sum(s_tuning * (pool.*temporalW),2);
+if any(s_tuning)
+    s = sum(s_tuning * (pool.*temporalW),2);
+else
+    s = sum(pool.*temporalW,'all');
+end
 
 % Normalization
 f = d(:,end) ./ (s + halfExp(sigma, p));
