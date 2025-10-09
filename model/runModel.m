@@ -79,6 +79,7 @@ switch p.stimSet
         stimseqs = {[1 1],[2 1],[3 1],[4 1],[5 1],[6 1],[7 1],[8 1],[9 1],[10 1]};
 end
 p.norient = numel(orientations);
+p.nspat = numel(p.x);
 contrasts = p.stimContrasts;
 
 % Pick conditions to run
@@ -102,18 +103,27 @@ end
 nseq = numel(rseq);
 
 % RF response
-for iO = 1:p.norient
-    p.rfresp(iO,:) = rfResponse(orientations(iO), p.ntheta);
-end
+if strcmp(p.modelClass,'spatial')
+    p.rfresp = rfSpatialResponse(orientations, p.x, p.ntheta, p.nx);
+    p.s_tuning = [];
+else
+    for iO = 1:p.norient
+        p.rfresp(iO,:) = rfResponse(orientations(iO), p.ntheta);
+    end
 
-% suppressive pooling
-p.s_tuning = rfResponse(-(1:p.ntheta).*pi/p.ntheta, p.ntheta, 1./p.p_supp);
-% p.s_tuning = p.s_tuning./mean(p.s_tuning,2);
+    % suppressive pooling
+    if isfinite(p.p_supp)
+        p.s_tuning = rfResponse(-(1:p.ntheta).*pi/p.ntheta, p.ntheta, 1./p.p_supp);
+        % p.s_tuning = p.s_tuning./mean(p.s_tuning,2);
+    else
+        p.s_tuning = [];
+    end
 
-% create distinct spatial populations for surround suppression
-if strcmp(p.stimMode,'surr_supp')
-    p.rfresp = [p.rfresp 0.*p.rfresp; 0.*p.rfresp p.rfresp];
-    p.s_tuning = ones(2.*p.ntheta,2.*p.ntheta); % force uniform tuning, for now
+    % create distinct spatial populations for surround suppression
+    if strcmp(p.stimMode,'surr_supp')
+        p.rfresp = [p.rfresp 0.*p.rfresp; 0.*p.rfresp p.rfresp];
+        p.s_tuning = []; % force uniform tuning, for now
+    end
 end
 
 %% loop through all conditions to run

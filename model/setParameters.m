@@ -24,7 +24,7 @@ end
 %% Model
 if ~isempty(modelClass)
     switch modelClass
-        case {'Main','No-IA','EG','LC'}
+        case {'Main','No-IA','EG','LC','spatial'}
             % ok
         otherwise
             error('modelClass not recognized. Check options in setParameters.m')
