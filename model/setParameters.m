@@ -1,4 +1,4 @@
-function p = setParameters(opt, modelClass)
+function p = setParameters(opt, modelClass, soa)
 
 % function p = setParameters(opt, modelClass)
 %
@@ -10,6 +10,10 @@ if ~exist('opt','var')
 end
 if ~exist('modelClass','var')
     modelClass = '';
+end
+
+if isempty(soa)
+    soa = 250;
 end
 
 %% Process modelClass
@@ -153,6 +157,11 @@ end
 p.AVWeights         = [1 0];        % [high low]
 p.AVNeutralT1Weight = 0.5;          % bias to treat neutral like attend to T1. 0.5 is no bias (with distributeVoluntary only)
 p.AVProp            = 1;            % proportion of attention allocated to cued target (with distributeVoluntary only)
+
+% attention parameters for fully spatiotemporal model
+p.AVTime = [466 590; 466+soa 590+soa];
+p.AVSpace = [1; 1];
+p.AVSpaceWid = [0; 0];
 
 %% Decision
 p.sigmaD          = .7; 

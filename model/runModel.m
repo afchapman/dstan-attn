@@ -36,7 +36,7 @@ if nargin < 2 || isempty(modelClass)
 end
 
 %% Set params
-p = setParameters(opt, modelClass);
+p = setParameters(opt, modelClass, rsoa);
 
 %% Display
 if isfield(opt,'display')
@@ -164,7 +164,11 @@ for icond = 1:numel(rcond)
                 % set time series
                 p = initTimeSeries(p);
                 p = setStim(p);
-                p = setTask(p,condname);
+                if strcmp(p.modelClass,'spatial')
+                    p = setTaskSpatiotemporal(p);
+                else
+                    p = setTask(p,condname);
+                end
                 p = setDecisionWindows(p);
                 p = setTemporalWindows(p);
 

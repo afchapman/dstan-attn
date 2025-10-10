@@ -95,7 +95,7 @@ for t = p.dt:p.dt:p.T
     
     % Excitatory drive
     driveV(:,idx) = halfExp(inp(:,end), p.p);
-    p.dav(:,idx) = sum(sum(driveV(:,1:idx-1).*p.tempWEAV(idx-1:-1:1),2)); % not feature-specific
+    p.dav(:,idx) = sum(driveV(:,1:idx-1).*p.tempWEAV(idx-1:-1:1),2);
 
     % Normalize and update firing rates
     [p.rav(:,idx), p.fav(:,idx), p.sav(:,idx)] = n_core(...
