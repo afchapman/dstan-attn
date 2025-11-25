@@ -93,7 +93,10 @@ p.tlist           = 0:p.dt:p.T;
 %% Space and feature space
 p.x               = 0;              % sampling of space
 p.nx              = numel(p.x);
+p.mx              = 4*p.nx-1;
+
 p.ntheta          = 12;             % should match RF
+p.mtheta          = 2*p.ntheta-1;
 
 %% Exponent
 p.p               = 1.5;

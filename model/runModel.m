@@ -104,7 +104,7 @@ nseq = numel(rseq);
 
 % RF response
 if strcmp(p.modelClass,'spatial')
-    p.rfresp = rfSpatialResponse(orientations, p.x, p.ntheta, p.nx);
+    p.rfresp = rfSpatialResponse(orientations, p.x, p.ntheta, p.nx, p.mtheta, p.mx);
     p.s_tuning = [];
 else
     for iO = 1:p.norient
